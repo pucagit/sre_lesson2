@@ -9,8 +9,7 @@ services:
       MYSQL_PASSWORD: web1_password
     volumes:
       - db_data:/var/lib/mysql
-    networks:
-      - backend
+    networks: [backend]
 
   web1:
     build: .
@@ -20,54 +19,49 @@ services:
       DB_USER: web1_user
       DB_PASSWORD: web1_password
       DB_NAME: web1_db
-      VIRTUAL_HOST: pucavv.io.vn
-      LETSENCRYPT_HOST: pucavv.io.vn
+      VIRTUAL_HOST: web1.pucavv.io.vn
+      LETSENCRYPT_HOST: web1.pucavv.io.vn
       VIRTUAL_PORT: 8888
     expose:
-      - 8888
+      - "8888"
     depends_on:
       - db
-    networks:
-      - backend
-      - proxy
+    networks: [backend, proxy]
 
-  nginx:
-    image: nginxproxy/nginx-proxy:alpine
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.8-alpine # pin a version
+    container_name: nginx-proxy # <-- important
     restart: always
     ports:
       - "80:80"
       - "443:443"
+    # Use the stock config; remove the custom nginx.conf bind
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - proxy_certs:/etc/nginx/certs:ro
-      - proxy_vhost:/etc/nginx/vhost.d:ro
-      - proxy_html:/usr/share/nginx/html:ro
+      - proxy_html:/usr/share/nginx/html
       - /var/run/docker.sock:/tmp/docker.sock:ro
-    depends_on:
-      - web1
-    networks:
-      - proxy
+    networks: [proxy]
 
   acme-companion:
-    image: nginxproxy/acme-companion
+    image: nginxproxy/acme-companion:2.6.1 # pin a version
     restart: always
     environment:
       DEFAULT_EMAIL: admin@pucavv.io.vn
+      NGINX_PROXY_CONTAINER: nginx-proxy # now matches container_name
     volumes:
       - proxy_certs:/etc/nginx/certs
-      - proxy_vhost:/etc/nginx/vhost.d
       - proxy_html:/usr/share/nginx/html
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - acme:/etc/acme.sh
     depends_on:
-      - nginx
-    networks:
-      - proxy
+      - nginx-proxy
+    networks: [proxy]
 
 volumes:
   db_data:
   proxy_certs:
-  proxy_vhost:
   proxy_html:
+  acme:
 
 networks:
   proxy:
