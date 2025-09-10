@@ -1,11 +1,13 @@
 from flask import Flask, render_template
 import mysql.connector  # type: ignore
+import os
 
 # Update this with your MySQL credentials
 DB_CONFIG = {
-    "host": "localhost",
-    "user": "web1",       
-    "password": "web1",
+    "host": os.getenv("DB_HOST"),
+    "user": os.getenv("DB_USER"),
+    "password": os.getenv("DB_PASSWORD"),
+    "database": os.getenv("DB_NAME")
 }
 
 app = Flask(__name__)
@@ -17,7 +19,7 @@ def init_db():
         password=DB_CONFIG["password"]
     )
     cur = conn.cursor()
-    cur.execute("CREATE DATABASE IF NOT EXISTS web1")
+    cur.execute(f"CREATE DATABASE IF NOT EXISTS {DB_CONFIG['database']}")
     cur.close()
     conn.close()
 
