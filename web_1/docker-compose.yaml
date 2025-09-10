@@ -22,6 +22,7 @@ services:
       DB_NAME: web1_db
       VIRTUAL_HOST: pucavv.io.vn
       LETSENCRYPT_HOST: pucavv.io.vn
+      VIRTUAL_PORT: 8888
     expose:
       - 8888
     depends_on:
