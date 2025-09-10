@@ -46,20 +46,20 @@ services:
     networks:
       - proxy
 
-    acme-companion:
-      image: nginxproxy/acme-companion
-      restart: always
-      environment:
-        DEFAULT_EMAIL: admin@pucavv.io.vn
-      volumes:
-        - proxy_certs:/etc/nginx/certs
-        - proxy_vhost:/etc/nginx/vhost.d
-        - proxy_html:/usr/share/nginx/html
-        - /var/run/docker.sock:/var/run/docker.sock:ro
-      depends_on:
-        - nginx
-      networks:
-        - proxy
+  acme-companion:
+    image: nginxproxy/acme-companion
+    restart: always
+    environment:
+      DEFAULT_EMAIL: admin@pucavv.io.vn
+    volumes:
+      - proxy_certs:/etc/nginx/certs
+      - proxy_vhost:/etc/nginx/vhost.d
+      - proxy_html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - nginx
+    networks:
+      - proxy
 
 volumes:
   db_data:
