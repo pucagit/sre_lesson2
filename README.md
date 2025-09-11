@@ -3,19 +3,12 @@
 ## Mục tiêu
 
 * `web1.pucavv.io.vn` → app **web\_1**
-* `web2.pucavv.io.vn` → app **web\_2** (chỉ cho phép truy cập từ IP chỉ định)
-* Chạy Gunicorn dưới systemd, Nginx reverse proxy qua **Unix socket**, cài Let’s Encrypt (HTTPS).
 
 ---
 
 ## 0) Chuẩn bị
 
-1.  **Packages**
-  ```
-  sudo apt update
-  sudo apt install -y nginx certbot python3-certbot-nginx
-  ```
-2. **Setup docker**
+**Setup docker**
   ```
   sudo apt update
   sudo apt install -y ca-certificates curl gnupg lsb-release
@@ -31,7 +24,7 @@
   sudo apt update
   sudo apt install -y docker-compose-plugin docker.io
   ```
-Thêm user để chạy docker:
+**Thêm user để chạy docker**
   ```
   sudo groupadd docker   # ignore if exists
   sudo usermod -aG docker $USER
