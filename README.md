@@ -1,6 +1,9 @@
 # Containerize Flask website + MySQL + Gunicorn + Nginx-proxy + Acme-companion (for enabling HTTPS) using docker-compose
 
 ## 0) Chuẩn bị
+**Cấu hình DNS**
+
+Cấu hình bản ghi A cho domain web1.pucavv.io.vn tương ứng với public IP của EC2. Nhớ cài Security Group của EC2 cho phép inbound HTTP/HTTPS traffic từ mọi nơi.
 
 **Setup docker**
   ```
