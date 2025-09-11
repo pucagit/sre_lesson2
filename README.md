@@ -1,4 +1,4 @@
-# Containerize Flask website + MySQL + Gunicorn + Nginx-proxy + Acme-companion using docker-compose
+# Containerize Flask website + MySQL + Gunicorn + Nginx-proxy + Acme-companion (for enabling HTTPS) using docker-compose
 
 ## 0) Chuẩn bị
 
@@ -193,6 +193,17 @@
 - `proxy:` 
 - `backend:` 
 
+## 3) Chạy container chứa Flask app
+```
+git clone https://github.com/pucagit/sre_lesson2
+cd sre_lesson2
+docker compose up -d --build
+```
+
+Test truy cập:
+```
+curl https://web1.pucavv.io.vn
+```
 ---
 
 Tham khảo: https://github.com/nginx-proxy/acme-companion/wiki/Docker-Compose
