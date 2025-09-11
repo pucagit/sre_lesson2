@@ -216,7 +216,7 @@ curl https://web1.pucavv.io.vn
   </head>
   <body>
     <title>Hello from Flask</title>
-    <h1>Bạn là lượt truy cập thứ 11.</h1>
+    <h1>Bạn là lượt truy cập thứ 1.</h1>
   </body>
 </html>
 ```
