@@ -48,7 +48,7 @@ services:
       - web-root:/var/www/html
     depends_on:
       - nginx-proxy
-    command: certonly --webroot --webroot-path=/var/www/html --email test@pucavv.io.vn --agree-tos --no-eff-email --staging -d web1.pucavv.io.vn
+    command: certonly --webroot --webroot-path=/var/www/html --email test@pucavv.io.vn --agree-tos --no-eff-email --force-renewal -d web1.pucavv.io.vn
 
 volumes:
   db_data:

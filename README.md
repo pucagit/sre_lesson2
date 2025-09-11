@@ -222,4 +222,6 @@ curl https://web1.pucavv.io.vn
 ```
 ---
 
-Tham khảo: https://github.com/nginx-proxy/acme-companion/wiki/Docker-Compose
+Tham khảo: 
+- https://nginx.org/en/docs/example.html
+- https://www.digitalocean.com/community/tutorials/how-to-secure-a-containerized-node-js-application-with-nginx-let-s-encrypt-and-docker-compose#step-2-defining-the-web-server-configuration
