@@ -196,7 +196,7 @@
 ## 3) Chạy container chứa Flask app
 ```
 git clone https://github.com/pucagit/sre_lesson2
-cd sre_lesson2
+cd sre_lesson2/web_1
 docker compose up -d --build
 ```
 
