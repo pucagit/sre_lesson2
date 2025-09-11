@@ -19,9 +19,6 @@ services:
       DB_USER: web1_user
       DB_PASSWORD: web1_password
       DB_NAME: web1_db
-      VIRTUAL_HOST: web1.pucavv.io.vn
-      LETSENCRYPT_HOST: web1.pucavv.io.vn
-      VIRTUAL_PORT: 8888
     expose:
       - "8888"
     depends_on:
@@ -29,38 +26,35 @@ services:
     networks: [backend, proxy]
 
   nginx-proxy:
-    image: nginxproxy/nginx-proxy:1.8-alpine
+    build: nginx:mainline-alpine
     container_name: nginx-proxy
     restart: always
     ports:
       - "80:80"
-      - "443:443"
     volumes:
-      - proxy_certs:/etc/nginx/certs:ro
-      - proxy_html:/usr/share/nginx/html
-      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./nginx/nginx.conf:/etc/nginx/conf.d
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
     networks: [proxy]
 
-  acme-companion:
-    image: nginxproxy/acme-companion:2.6.1
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
     restart: always
-    environment:
-      DEFAULT_EMAIL: admin@pucavv.io.vn
-      NGINX_PROXY_CONTAINER: nginx-proxy
     volumes:
-      - proxy_certs:/etc/nginx/certs
-      - proxy_html:/usr/share/nginx/html
-      - /var/run/docker.sock:/var/run/docker.sock:ro
-      - acme:/etc/acme.sh
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/lib/letsencrypt
+      - web-root:/var/www/html
     depends_on:
       - nginx-proxy
-    networks: [proxy]
+    command: certonly --webroot --webroot-path=/var/www/html --email test@pucavv.io.vn --agree-tos --no-eff-email --staging -d web1.pucavv.io.vn
 
 volumes:
   db_data:
-  proxy_certs:
-  proxy_html:
-  acme:
+  certbot-etc:
+  certbot-var:
+  web-root:
 
 networks:
   proxy:
