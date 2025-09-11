@@ -1,6 +1,6 @@
 FROM nginx:1.29.1-alpine-slim
 
-RUN rm -f /etc/nginx/conf.d/*
+# RUN rm -f /etc/nginx/conf.d/*
 
 RUN apk add --no-cache certbot certbot-nginx 
 
