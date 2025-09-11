@@ -1,10 +1,4 @@
-# Triển khai 2 Flask app với Gunicorn + Nginx + HTTPS + Giới hạn IP
-
-## Mục tiêu
-
-* `web1.pucavv.io.vn` → app **web\_1**
-
----
+# Containerize Flask website + MySQL + Gunicorn + Nginx-proxy + Acme-companion using docker-compose
 
 ## 0) Chuẩn bị
 
@@ -198,4 +192,7 @@
 `networks:` (khai báo các bridged-networks)
 - `proxy:` 
 - `backend:` 
+
 ---
+
+Tham khảo: https://github.com/nginx-proxy/acme-companion/wiki/Docker-Compose
