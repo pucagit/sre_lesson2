@@ -26,13 +26,13 @@ services:
     networks: [backend, proxy]
 
   nginx-proxy:
-    image: nginx:mainline-alpine
+    build:
+      context: ./nginx
     container_name: nginx-proxy
     restart: always
     ports:
       - "80:80"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d
       - certbot-etc:/etc/letsencrypt
       - certbot-var:/var/lib/letsencrypt
       - web-root:/var/www/html
