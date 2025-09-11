@@ -15,6 +15,6 @@ fi
         sleep 12h
         certbot renew --nginx --quiet --deploy-hook "nginx -s reload" | true
     done
-)
+) &
 
 exec nginx -g 'daemon off;'
