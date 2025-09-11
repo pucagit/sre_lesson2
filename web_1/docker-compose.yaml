@@ -26,35 +26,18 @@ services:
     networks: [backend, proxy]
 
   nginx-proxy:
-    build:
-      context: ./nginx
-    container_name: nginx-proxy
+    build: ./nginx
     restart: always
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
     networks: [proxy]
-
-  certbot:
-    image: certbot/certbot
-    container_name: certbot
-    restart: always
-    volumes:
-      - certbot-etc:/etc/letsencrypt
-      - certbot-var:/var/lib/letsencrypt
-      - web-root:/var/www/html
-    depends_on:
-      - nginx-proxy
-    command: certonly --webroot --webroot-path=/var/www/html --email test@pucavv.io.vn --agree-tos --no-eff-email --force-renewal -d web1.pucavv.io.vn
 
 volumes:
   db_data:
   certbot-etc:
-  certbot-var:
-  web-root:
 
 networks:
   proxy:
