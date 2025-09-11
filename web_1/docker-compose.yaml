@@ -29,13 +29,12 @@ services:
     networks: [backend, proxy]
 
   nginx-proxy:
-    image: nginxproxy/nginx-proxy:1.8-alpine # pin a version
-    container_name: nginx-proxy # <-- important
+    image: nginxproxy/nginx-proxy:1.8-alpine
+    container_name: nginx-proxy
     restart: always
     ports:
       - "80:80"
       - "443:443"
-    # Use the stock config; remove the custom nginx.conf bind
     volumes:
       - proxy_certs:/etc/nginx/certs:ro
       - proxy_html:/usr/share/nginx/html
@@ -43,11 +42,11 @@ services:
     networks: [proxy]
 
   acme-companion:
-    image: nginxproxy/acme-companion:2.6.1 # pin a version
+    image: nginxproxy/acme-companion:2.6.1
     restart: always
     environment:
       DEFAULT_EMAIL: admin@pucavv.io.vn
-      NGINX_PROXY_CONTAINER: nginx-proxy # now matches container_name
+      NGINX_PROXY_CONTAINER: nginx-proxy
     volumes:
       - proxy_certs:/etc/nginx/certs
       - proxy_html:/usr/share/nginx/html
