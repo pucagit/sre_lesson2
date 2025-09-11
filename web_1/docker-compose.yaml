@@ -33,13 +33,12 @@ services:
       - "443:443"
     volumes:
       - certbot-etc:/etc/letsencrypt
-      - nginx:/etc/nginx
+      - ./nginx:/etc/nginx
     networks: [proxy]
 
 volumes:
   db_data:
   certbot-etc:
-  nginx:
 
 networks:
   proxy:
