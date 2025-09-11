@@ -206,6 +206,19 @@ docker compose up -d --build
 Test truy cập:
 ```
 curl https://web1.pucavv.io.vn
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <title>Hello from Flask</title>
+    <h1>Bạn là lượt truy cập thứ 11.</h1>
+  </body>
+</html>
 ```
 ---
 
