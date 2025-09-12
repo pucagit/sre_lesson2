@@ -11,4 +11,11 @@ COPY . .
 
 EXPOSE 8888
 
+# Create a non-root user and switch to it
+RUN addgroup -g 1000 web1group && \
+    adduser -u 1000 -G web1group && \
+    chown -R web1user:web1group /app
+
+USER web1user
+
 CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8888", "app:app"]
