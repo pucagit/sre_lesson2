@@ -2,7 +2,6 @@ from flask import Flask, render_template
 import mysql.connector  # type: ignore
 import os
 
-# Update this with your MySQL credentials
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
     "user": os.getenv("DB_USER"),
