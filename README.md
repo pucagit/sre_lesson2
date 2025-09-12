@@ -83,9 +83,6 @@ Cấu hình bản ghi A cho domain web1.pucavv.io.vn tương ứng với public 
 
   - `DB_HOST: db` → hostname để Docker DNS trỏ tới đúng `db` container.
   - `DB_USER/DB_PASSWORD/DB_NAME` → tương ứng với các biến khai báo ở MySQL để kết nối tới database.
-  - `VIRTUAL_HOST: web1.pucavv.io.vn` → để container `nginx-proxy` route hostname tới container này.
-  - `VIRTUAL_PORT: 8888` -> để container `nginx-proxy` biết để route traffic tới port này.
-  - `LETSENCRYPT_HOST: web1.pucavv.io.vn` → để container `acme-companion` request/renew cert cho host này.
 
 - `expose:`
 
@@ -106,9 +103,9 @@ Cấu hình bản ghi A cho domain web1.pucavv.io.vn tương ứng với public 
   - `proxy` để `nginx-proxy` có thể kết nối tới
 
 `nginx-proxy:` (reverse proxy) 
-- `image: nginxproxy/nginx-proxy:1.8-alpine`
+- `build: ./nginx`
 
-  Chạy nginx cùng với docker-gen (tự động tạo file config dựa trên metada của Docker container)
+  Build container từ Dockerfile trong thư mục `./nginx`.
 
 - `container_name: nginx-proxy`
 
@@ -124,74 +121,22 @@ Cấu hình bản ghi A cho domain web1.pucavv.io.vn tương ứng với public 
     Expose HTTP và HTTPS từ container ra tới host.
 
 - `volumes:`
-  - `proxy_certs:/etc/nginx/certs:ro`
-  
-    Mount cert được tạo bởi `acme_companion` vào `proxy_certs` với quyền read-only, Nginx sẽ đọc được cert này trong  `/etc/nginx/certs` của container `nginx-proxy`.
+  - `certbot:/etc/letsencrypt`
 
-  - `proxy_html:/usr/share/nginx/html`
+    Mount volume `cerbot` vào thư mục `/etc/letsencrypt` trong container để lưu trữ thông tin cert được cấp bởi Let's Encrypt (không phải cấp mới cert mỗi khi build lại container). 
 
-    Thư mục tĩnh cho challenge và default page của ACME HTTP-01.
+  - `./nginx:/etc/nginx`
 
-  - `/var/run/docker.sock:/tmp/docker.sock:ro`
+    Bind mount thư mục `./nginx` vào thư mục `/etc/nginx` trong container để áp dụng cấu hình nginx ở host vào trong container.
 
-    Mount socket để `nginx-proxy` (thông qua `docker-gen`) đọc được các biến `env` và events của các container khác để tự động config routing.
-    
-    Cụ thể, khi `web1` khởi động, `nginx-proxy` đọc biến `env` (`VIRTUAL_HOST`, `VIRTUAL_PORT`) và tạo block Nginx server để proxy `web1.pucavv.io.vn` → `web1:8888`.
+- `networks: [proxy]`
 
-  - `networks: [proxy]`
-
-    Đặt vào mạng `proxy` để có thể kết nối tới `web1`.
-
-`acme-companion:` (Tự động Let's Encrypt bằng acme.sh)
-- `image: nginxproxy/acme-companion:2.6.1`
-
-  Image tự động khởi tạo/làm mới certs và thông báo cho `nginx-proxy` reload nếu có thay đổi.
-
-- `restart: always`
-
-  Nếu container crash, Docker tự động restart lại container đó.
-
-- `environment:`
-  - `DEFAUL_EMAIL: admin@pucavv.io.vn`
-
-    Email dùng để đăng kí ACME account với Let's Encrypt.
-
-  - `NGINX_PROXY_CONTAINER: nginx-proxy`
-
-    Pointer tới `nginx-proxy` container để companion có thể xác định chỗ để viết cert và thông báo Nginx reload sau khi khởi tạo/làm mới cert.
-
-  - `volumes:`
-
-    - `proxy_certs:/etc/nginx/certs`
-  
-      Sử dụng cùng volume với `nginx-proxy` nhưng với quyển read-write để companion viết certs/keys.
-
-  - `proxy_html:/usr/share/nginx/html`
-
-    Cùng thư mục webroot cho HTTP-01 challenges để viết các file challenge vào đây.
-
-  - `/var/run/docker.sock:/tmp/docker.sock:ro`
-
-    Để phát hiện container chứa `LETSENCRYPT_HOST` và thông báo `nginx-proxy` reload.
-
-    Cụ thể, `acme-companion` theo dõi container với `LETSENCRYPT_HOST`. Nó chứng minh quyền sở hữu của `web1.pucavv.io.vn` thông qua HTTP-01 (sử dụng thư mục tĩnh `proxy-html`), lấy cert từ Let's Encrypt, lưu ở `proxy-certs` và thông báo `nginx-proxy` reload. `nginx-proxy` lúc này có thể cung cấp HTTPS sử dụng cert được tạo ở volume dùng chung.
-
-  - `acme:/etc/acme.sh`
-
-    Lưu trạng thái của `acme.sh` (ACME account, metadata khởi tạo/làm mới). Không có cái này, thì mỗi lần tạo lại container sẽ phải khởi tạo lại cert mới → có thể bị rate limit bởi Let's Encrypt.
-
-  - `depends_on:`
-    - `- nginx-proxy` → khởi tạo sau `nginx-proxy`.
-  - `networks: [proxy]`
-
-    Đặt chung mạng với `nginx-proxy` để giao tiếp. 
+  Đặt vào mạng `proxy` để có thể kết nối tới `web1`.
 
 `volumes:` (khai báo volume được quản lý bới Docker)
-- `db_data:` → lưu trừ MySQL data.
-- `proxy_certs` → thư mục cert/key dùng chung giữa `nginx-proxy` (ro) và `acme-companion` (rw).
-- `proxy_html` → thử mục webroot dùng chung cho HTTP-01 challenges.
-- `acme:` → lưu trạng thái `acme.sh`.
-
+- `db_data:` → lưu trữ MySQL data.
+- `certbot` → lưu trữ cert/key để sử dụng HTTPS.
+  
 `networks:` (khai báo các bridged-networks)
 - `proxy:` 
 - `backend:` 
@@ -199,13 +144,13 @@ Cấu hình bản ghi A cho domain web1.pucavv.io.vn tương ứng với public 
 ## 3) Chạy container chứa Flask app
 ```
 git clone https://github.com/pucagit/sre_lesson2
-cd sre_lesson2/web_1
+cd sre_lesson2/web_3
 docker compose up -d --build
 ```
 
 Test truy cập:
 ```
-curl https://web1.pucavv.io.vn
+curl https://web3.pucavv.io.vn
 
 <!DOCTYPE html>
 <html lang="en">

@@ -5,22 +5,22 @@ services:
     container_name: db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: web1_db
-      MYSQL_USER: web1_user
-      MYSQL_PASSWORD: web1_password
+      MYSQL_DATABASE: web3_db
+      MYSQL_USER: web3_user
+      MYSQL_PASSWORD: web3_password
     volumes:
       - db_data:/var/lib/mysql
     networks: [backend]
 
-  web1:
+  web3:
     build: .
     restart: always
-    container_name: web1
+    container_name: web3
     environment:
       DB_HOST: db
-      DB_USER: web1_user
-      DB_PASSWORD: web1_password
-      DB_NAME: web1_db
+      DB_USER: web3_user
+      DB_PASSWORD: web3_password
+      DB_NAME: web3_db
     expose:
       - "8888"
     depends_on:

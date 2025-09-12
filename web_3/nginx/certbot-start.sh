@@ -1,6 +1,6 @@
 #!/bin/sh
 
-DOMAIN="web2.pucavv.io.vn"
+DOMAIN="web3.pucavv.io.vn"
 EMAIL="admin@pucavv.io.vn"
 
 if ! certbot certificates | grep -q "Domains: $DOMAIN"; then
