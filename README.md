@@ -169,4 +169,4 @@ curl https://web3.pucavv.io.vn
 
 Tham khảo: 
 - https://nginx.org/en/docs/example.html
-- https://www.digitalocean.com/community/tutorials/how-to-secure-a-containerized-node-js-application-with-nginx-let-s-encrypt-and-docker-compose#step-2-defining-the-web-server-configuration
+- https://viblo.asia/p/tai-sao-nen-chay-ung-dung-container-voi-non-root-user-jvEla3VNKkw
