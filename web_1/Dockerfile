@@ -12,9 +12,11 @@ COPY . .
 EXPOSE 8888
 
 # Create a non-root user and switch to it
-RUN addgroup -g 1000 web1group && \
-    adduser -u 1000 web1user -G web1group && \
-    chown -R web1user:web1group /app
+RUN addgroup -g 1000 web1group
+
+RUN adduser -D -u 1000 web1user -G web1group
+
+RUN chown -R web1user:web1group /app
 
 USER web1user
 
