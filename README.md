@@ -30,19 +30,41 @@ Cấu hình bản ghi A cho domain web1.pucavv.io.vn tương ứng với public 
 ## 1) Cấu hình Dockerfile (dùng cho container `web1`)
 - `FROM python:3.11-slim` → Khởi tạo base image với Python 3.11.
 - `WORKDIR /app` → Đặt thư mục default cho mọi thao tác, nếu không có Docker sẽ tạo nó.
-- `RUN apt-get update && apt-get upgrade -y && apt-get clean && rm -rf /var/lib/apt/lists/*` → Update danh sách package, upgrade các package đã tải, dọn `apt` cache metadata và dọn dẹp thử mục list.
 -  `COPY requirements.txt .` → Copy file chứa dependency vào Docker trước (sau này khi build lại docker, phần này sẽ được cache và bỏ qua, chỉ chạy lại nếu có sự thay đổi).
 -  `RUN pip install --no-cache-dir -r requirements.txt` → Tải các dependency trong file `requirements.txt`
 -  `COPY . .` → Copy tất cả code vào `/app`.
 -  `EXPOSE 8888` → Thông báo container đang nghe trên port 8888 (chỉ thông báo, không expose).
+-  Tạo usergroup `web3group` và thêm user `web3user` vào group đó rồi cấp quyền cho user và groupuser này vào thư mục `/app` để container app chạy dưới quyền của user này:
+
+    ```
+    RUN addgroup -g 1000 web3group
+
+    RUN adduser -D -u 1000 web3user -G web3group
+
+    RUN chown -R web3user:web3group /app
+
+    USER web3user
+    ```
 -  `CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:8888", "app:app"]` → Command mặc định khi chạy container:
    -  `gunicorn` → WSGI server cho app Python.
    -  `-w 4` → 4 tiến trình worker.
    -  `-b 0.0.0.0:8888` → chạy trên mọi interface ở cổng 8888 để container khác có thể truy cập được.
    -  `app:app` → `module:callable` (ví dụ file app.py với WSGI `app` object)
 
+## 2) Cấu hình Dockerfile và Nginx (dùng cho container `nginx-proxy`)
+- `FROM nginx:1.29.1-alpine-slim` → Khởi tạo base image với Nginx 1.29.1.
+- `RUN apk add --no-cache certbot certbot-nginx` → Tải certbot để cấp cert tạo SSL và tự động cấu hình nginx sử dụng HTTPS.
+- `COPY nginx.conf /etc/nginx/nginx.conf` → Copy file config nginx từ host vào trong container.
+- Copy script chạy certbot vào trong container, cấp quyền execute và thêm vào `ENTRYPOINT` để chạy khi container khởi tạo:
 
-## 2) Cấu hình các service bằng docker-compose.yaml
+  ```
+  COPY certbot-start.sh /usr/local/bin/certbot-start.sh
+
+  RUN chmod +x /usr/local/bin/certbot-start.sh
+  ENTRYPOINT ["/usr/local/bin/certbot-start.sh"]  
+  ```
+
+## 3) Cấu hình các service bằng docker-compose.yaml
 `db:` (MySQL database container)
 - `image: mysql:8`
   
